@@ -5,8 +5,24 @@ import os
 import re
 
 files = []
-maliciousAPI = ["barcodescanner.SCAN" 
-                ]
+maliciousAPI = ["barcodescanner.scan",
+"NFC.addNdefListener",
+"NFC.addMimeTypeListener",
+"NFC.addTagDiscoveredListener",
+"Bluetooth.getUuids",
+"WifiInfo.get",
+"FileTransfer.download",
+"Internal",
+"contacts.find",
+"DirectoryEntry.getDirectory",
+"DirectoryEntry.getFile",
+"DirectoryReader.readEntries",
+"Entry.getMetadata",
+"FileEntry.file",
+"FileReader.readAsText",
+"FileReader.readAsDataURL",
+"Media.getFormatData"
+ ]
 
 def SearchFile(path, keyword): 
     for fileName in os.listdir(path):
@@ -25,7 +41,7 @@ def main():
         context = fp.read();   
         fp.close()
         for api in maliciousAPI:
-            pattern = re.compile(api)
+            pattern = re.compile(api, re.IGNORECASE)
             results = pattern.findall(context)
             for result in results:
                 line = "URL: " + file + "\r\n"
