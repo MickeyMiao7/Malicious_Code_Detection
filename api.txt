@@ -1,0 +1,9 @@
+URL: ./address.book/smali/com/google/zxing/client/android/CaptureActivity.smali
+MaliciousAPI: barcodescanner.SCAN
+
+URL: ./address.book/smali/com/google/zxing/client/android/Intents$Scan.smali
+MaliciousAPI: barcodescanner.SCAN
+
+URL: ./address.book/smali/com/phonegap/plugins/barcodescanner/BarcodeScanner.smali
+MaliciousAPI: barcodescanner.SCAN
+

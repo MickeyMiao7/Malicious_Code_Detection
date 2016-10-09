@@ -5,6 +5,8 @@ import os
 import re
 
 files = []
+maliciousAPI = ["barcodescanner.SCAN" 
+                ]
 
 def SearchFile(path, keyword): 
     for fileName in os.listdir(path):
@@ -16,17 +18,21 @@ def SearchFile(path, keyword):
 
 
 def main():
-    SearchFile(".", "xml")
-    target = open("permission.txt", "w")
+    SearchFile(".", "smali")
+    target = open("api.txt", "w")
     for file in files:
         fp = open(file, "r")
-        context = fp.read();
+        context = fp.read();   
         fp.close()
-        pattern = re.compile('android\.permission\..*"')
-        results = pattern.findall(context)
-        for result in results:
-            line = result[0:len(result)-2] + "\n"
-            target.write(line)
+        for api in maliciousAPI:
+            pattern = re.compile(api)
+            results = pattern.findall(context)
+            for result in results:
+                line = "URL: " + file + "\r\n"
+                target.write(line)
+                line = "MaliciousAPI: " + result + "\r\n"
+                target.write(line)
+                target.write("\r\n")
     target.close()
          
 
