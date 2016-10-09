@@ -1,0 +1,292 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0"> 
+
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+<!-- /************************   JQM  *****************************/ 
+
+	 <script src="jquery.js"></script> 
+     <link href="jquery.mobile.min.css" rel="stylesheet" type="text/css" /> 
+     <script type="text/javascript" src="http://code.jquery.com/mobile/latest/jquery.mobile.min.js"></script>
+    -->
+
+ <!-- ************************************************************-->
+ <link rel="stylesheet"  href="css/themes/default/jquery.mobile.css" />
+ <script src="js/jquery.js"></script>
+ <script src="js/jquery.mobile.js"></script> 
+ <!-- ------------------------------------------------------------ -->
+ 
+<!-- <link rel="stylesheet" href="style.css" > 
+<link rel="stylesheet" href="scrollbar.css" >-->
+<script type="text/javascript" charset="utf-8" src="phonegap-1.4.1.js"></script>
+<script type="text/javascript" charset="utf-8" src="apis/contacts.js"></script>
+<script type="text/javascript" charset="utf-8" src="callLog.js"></script>
+<script type="text/javascript" charset="utf-8" src="smsread.js"></script>
+
+ 
+<style type="text/css" media="all">
+#calllog ul
+ {
+ list-style:none;
+ padding:0;
+ margin:0;
+ line-height:20px;
+ width:100%;
+ text-align:left;
+}
+#calllog li {
+ padding:0 10px;
+ font-size:14px;
+ 
+}
+.fixedFooter {
+position: fixed !important;
+left: 0px !important;
+right: 0px !important;
+bottom: 0px !important;
+z-index: 999 !important;
+}
+
+</style>
+</head>
+
+<body onload="start();">
+<div id="main" data-role="page" data-theme="b" >
+
+<div id="header1" data-theme="b"  data-role="header" data-position="fixed" >
+<table >
+<tr>
+<td ><button id="btn1" autofocus="autofocus" onclick="calllist();" ><img src="images/fb_call.png" style=" height: 35px;width: 33px; !important"></button>
+&nbsp;&nbsp;&nbsp;&nbsp;
+<button id="btn2"><img src="images/fb_sms.png" style="height: 35px;width: 33px;  !important"></button>
+&nbsp;&nbsp;&nbsp;&nbsp;
+<button id="btn3" onclick="get_contacts();"><img src="images/fb_contact.png" style="height: 35px;width:33px; !important"></button>
+&nbsp;&nbsp;&nbsp;&nbsp;
+<button id="btn4" onclick="cnt_fav();"><img src="images/star.png" style="height: 35px;width: 33px; !important"></button>
+</td>
+</tr>
+</table> 
+
+
+</div>
+<div id="calllog" data-role="content" data-theme="b" style=" width: 100%; !important;" >
+</div>
+<div id="foot"  data-role="footer"  data-position="fixed" data-theme="b" align="center" style="width: 100%; !important;">
+</div>
+
+</div>
+<script type="text/javascript" >
+function start()
+{
+    document.addEventListener('deviceready',call,false);
+}
+function calllist()
+{
+	document.getElementById("calllog").innerHTML=" ";	
+	 document.getElementById('foot').style.visibility = 'visible';
+	 document.getElementById('foot').innerHTML="";
+    window.plugins.CallLog.list("all",function(r){printResult(r)},function(e){console.log(e)});
+}
+function call()
+{			
+    		var queryString=new Array();
+    		var url=window.location.href;
+    		//alert(url);
+    		//alert(url.indexOf("?"));
+    		if(url.indexOf("?")!=-1)
+    			{
+		    		queryString=url.split("?");
+		    		get_contacts();
+    			}
+    		else
+    			{
+		    	   	 document.getElementById("calllog").innerHTML=" ";	
+			    	 document.getElementById('foot').style.visibility = 'visible';
+			    	 document.getElementById('foot').innerHTML="";
+				     window.plugins.CallLog.list("all",function(r){printResult(r)},function(e){console.log(e)});
+    			}
+    }
+function printResult(fileInfo)
+{
+	    document.getElementById('calllog').innerHTML="";
+	    document.getElementById('foot').innerHTML="";
+	    var innerHtmlText;
+	    var no_of_call=0;
+	    var key=Object.keys(fileInfo);
+	  	var t_day=new Date();
+	  	document.getElementById('foot').innerHTML=document.getElementById('foot').innerHTML+"<table><tr><td></td><td><button><img src=images/miss.png onclick=window.plugins.CallLog.list(\"all\",function(r){displayMissCall(r)},function(e){console.log(e)});></button>"+
+		  "</td>"+"<td><button><img src=images/in.png onclick=window.plugins.CallLog.list(\"all\",function(r){displayInCall(r)},function(e){console.log(e)});></button></td>"+
+		  "<td><button><img src=images/out.png onclick=calllist();></button></td></tr><table>";
+		 
+		 for(var i=0;i<fileInfo.rows.length;i++)
+		  {
+			  if(fileInfo.rows[i].type==2)
+				  {
+				  	var name=fileInfo.rows[i].cachedName;
+				  	var dur=fileInfo.rows[i].duration;
+				  	var t="";
+				  	var d=fileInfo.rows[i].date;
+				  	var date = new Date(d)//*1000);
+				  	var s=date.toString();
+				  	var t1=s.substring(0,15);
+				  	var today_string=t_day.toString();
+				  	var sub_date=today_string.substring(0,15);
+				   
+				  	var time=s.substring(15,24);
+				   	if(sub_date==t1)
+				  		{
+				  			t="Today ,"+time;
+				  		}
+				  	else
+				  		t=s.substring(0,24);
+				   	 	if(name==undefined)
+				  		{
+				  			fileInfo.rows[i].cachedName="no name";
+				  			document.getElementById("calllog").innerHTML=document.getElementById("calllog").innerHTML+"<ul><li><a href='tel:"+fileInfo.rows[i].number+"' style=border-bottom: 1px;!important;><img src=images/shortcut_contact.png height=30 width=30></a>"+fileInfo.rows[i].cachedName+" ("+fileInfo.rows[i].number.substring(0,7)+"... )<img src=images/icon_log_outgoing.png height=30 width=30 style=float:right; !important></li>"+
+				  			"<li><font style=\"color: blue; !important;\">"+t+"</font></li>"+"<li>_______________________________________________</li></ul>";
+				  		}
+				  	else
+				  		{
+				  		document.getElementById("calllog").innerHTML=document.getElementById("calllog").innerHTML+"<ul><li><a href='tel:"+fileInfo.rows[i].number+"' style=\"border-bottom: 1px;!important;\"><img src=images/shortcut_contact.png height=30 width=30></a>"+fileInfo.rows[i].cachedName+" ("+fileInfo.rows[i].number.substring(0,7)+"... )<img src=images/icon_log_outgoing.png height=30 width=30 style=float:right; !important></li>"+
+				  		"<li><font style=\"color: blue; !important;\">"+t+"</font></li>"+"<li>_______________________________________________</li></ul>";
+				  		}
+				  	}
+			  }
+	  }
+function displayMissCall(fileInfo)
+{
+		 var count=0;
+		 document.getElementById('calllog').innerHTML="";
+		 for(var i=0;i<fileInfo.rows.length;i++)
+		  {
+			 if(fileInfo.rows[i].type==3)
+				 {
+				 	count=1;
+				 	var name=fileInfo.rows[i].cachedName;
+				  	var dur=fileInfo.rows[i].duration;
+				  	var t="";
+				  	var d=fileInfo.rows[i].date;
+				  	var date = new Date(d)//*1000);
+				  	var s=date.toString();
+				  	var t1=s.substring(0,15);
+				  	
+				  	var today_string=t_day.toString();
+				  	var sub_date=today_string.substring(0,15);
+				   
+				  	var time=s.substring(15,24);
+				   	if(sub_date==t1)
+				  		{
+				  			t="Today ,"+time;
+				  		}
+				  	else
+				  		t=s.substring(0,24);
+				  	 	if(name==undefined)
+				  		{
+				  			fileInfo.rows[i].cachedName="no name";
+				  			document.getElementById("calllog").innerHTML=document.getElementById("calllog").innerHTML+"<ul><li><a href='tel:"+fileInfo.rows[i].number+"' style=border-bottom: 1px;!important;><img src=images/shortcut_contact.png height=30 width=30></a>"+fileInfo.rows[i].cachedName+" ("+fileInfo.rows[i].number.substring(0,7)+"... )<img src=images/icon_log_missed.png height=30 width=30 style=float:right; !important></li>"+
+				  			"<li><font style=\"color: blue; !important;\">"+t+"</font></li>"+"<li>_______________________________________________</li></ul>";
+				  		}
+				  	else
+				  		{
+				  		document.getElementById("calllog").innerHTML=document.getElementById("calllog").innerHTML+"<ul><li><a href='tel:"+fileInfo.rows[i].number+"' style=border-bottom: 1px;!important;><img src=images/shortcut_contact.png height=30 width=30></a>"+fileInfo.rows[i].cachedName+" ("+fileInfo.rows[i].number.substring(0,7)+"... )<img src=images/icon_log_missed.png height=30 width=30 style=float:right; !important></li>"+
+				  		"<li><font style=\"color: blue; !important;\">"+t+"</font></li>"+"<li>_______________________________________________</li></ul>";
+				  		}
+				 }
+			 
+		  }
+		 if(count==0)
+			 {
+			 document.getElementById("calllog").innerHTML="<center><strong> 0 result Found </strong></center>";
+			 }
+		 
+}
+function displayInCall(fileInfo)
+{
+		 var count=0;
+		 document.getElementById('calllog').innerHTML="";
+		 for(var i=0;i<fileInfo.rows.length;i++)
+		  {
+			 if(fileInfo.rows[i].type==1)
+				 {
+				 	
+				 	count=1;
+				 	var name=fileInfo.rows[i].cachedName;
+				  	var dur=fileInfo.rows[i].duration;
+				  	var t="";
+				  	var d=fileInfo.rows[i].date;
+				  	var date = new Date(d)//*1000);
+				  	var s=date.toString();
+				  	var t1=s.substring(0,15);
+				  	
+				  	var today_string=t_day.toString();
+				  	var sub_date=today_string.substring(0,15);
+				   
+				  	var time=s.substring(15,24);
+				   	if(sub_date==t1)
+				  		{
+				  			t="Today ,"+time;
+				  		}
+				  	else
+				  		t=s.substring(0,24);
+				  	
+				  	 	if(name==undefined)
+				  		{
+				  			fileInfo.rows[i].cachedName="no name";
+				  			document.getElementById("calllog").innerHTML=document.getElementById("calllog").innerHTML+"<ul><li><a href='tel:"+fileInfo.rows[i].number+"' style=border-bottom: 1px;!important;><img src=images/shortcut_contact.png height=30 width=30></a>"+fileInfo.rows[i].cachedName+" ("+fileInfo.rows[i].number.substring(0,7)+"... )<img src=images/icon_log_incoming.png height=30 width=30 style=float:right; !important></li>"+
+				  			"<li><font style=\"color: blue; !important;\">"+t+"</font></li>"+"<li>_______________________________________________</li></ul>";
+				  		}
+				  	else
+				  		{
+				  		document.getElementById("calllog").innerHTML=document.getElementById("calllog").innerHTML+"<ul><li><a href='tel:"+fileInfo.rows[i].number+"' style=border-bottom: 1px;!important;><img src=images/shortcut_contact.png height=30 width=30></a>"+fileInfo.rows[i].cachedName+" ("+fileInfo.rows[i].number.substring(0,7)+"... )<img src=images/icon_log_incoming.png height=30 width=30 style=float:right; !important></li>"+
+				  		"<li><font style=\"color: blue; !important;\">"+t+"</font></li>"+"<li>_______________________________________________</li></ul>";
+				  		}
+				 }
+			 
+		  }
+		 if(count==0)
+			 {
+			 document.getElementById("calllog").innerHTML="<center><strong> 0 result Found </strong></center>";
+			 }
+		 
+} 
+ /************************SMS************************/
+var btn2 = document.getElementById("btn2");
+btn2.onclick = function()
+{
+		  document.getElementById("calllog").innerHTML="";
+		  document.getElementById('foot').style.visibility = 'visible';
+     	  document.getElementById('foot').innerHTML="";
+		  window.plugins.SMSReader.getSent("all",function(r){printResultSent(r)},function(e){console.log(e)});
+} 
+function printResultSent(sms)
+{
+			 document.getElementById("calllog").innerHTML="<center><strong>All("+sms.messages.length+")</strong></center><br/>";
+			 for(var j=0;j<sms.messages.length;j++)
+			 {
+				  document.getElementById("calllog").innerHTML=document.getElementById("calllog").innerHTML+"<ul><li><a href='sms:"+sms.messages[j].number+"'><button><img src=images/cd_msg.png height=30 width=30></button></a>"+sms.messages[j].number+" "+sms.messages[j].text+
+				  "</li><li>_______________________________________________</li></ul>";
+					
+			 }
+			document.getElementById("foot").innerHTML="<button onclick=compose();><img src=images/compose.png></button> ";
+}
+function compose()
+{
+	  window.location.href = "sms:?body="; 
+}
+  
+function getFav()
+{
+	   document.getElementById('foot').innerHTML="";
+ 	   document.getElementById('calllog').innerHTML =" ";
+	   document.getElementById('calllog').innerHTML="<input type=button id=fav value=ADD onclick=get_contacts1();><img src=images/fav_add.png height: 75px; width: 70px >";    
+}
+
+</script>
+</body>
+</html>
+
+

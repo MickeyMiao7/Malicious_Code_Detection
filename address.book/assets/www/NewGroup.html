@@ -1,0 +1,138 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<link rel="stylesheet" href="style.css" >
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
+      <meta name="apple-mobile-web-app-capable" content="yes">
+      <meta name="apple-mobile-web-app-status-bar-style" content="black">
+<script type="text/javascript" charset="utf-8" src="phonegap-1.4.1.js"></script>
+<script type="text/javascript" charset="utf-8" src="apis/contacts.js"></script>
+<script type="text/javascript" charset="utf-8" src="apis/device.js"></script>
+<script type="text/javascript" charset="utf-8" src="callLog.js"></script>
+<!-- /************************   JQM  *****************************/ 
+
+	 <script src="jquery.js"></script> 
+     <link href="jquery.mobile.min.css" rel="stylesheet" type="text/css" /> 
+     <script type="text/javascript" src="http://code.jquery.com/mobile/latest/jquery.mobile.min.js"></script>
+    <script src="js/jqm-docs.js"></script>
+  /***************************************************/-->
+ <!-- ************************************************************ -->
+ <link rel="stylesheet"  href="css/themes/default/jquery.mobile.css" />
+ <script src="js/jquery.js"></script>
+ <script src="js/jquery.mobile.js"></script>
+ <!-- ------------------------------------------------------------ -->
+<script type="text/javascript">
+
+function createGroup()
+{
+	
+	var grp=document.getElementById('groupname').value;
+	if(grp=="")
+		{
+			alert("Please enter Group name");
+		}
+	else
+		{
+	      var db = window.openDatabase("Database", "1.0", "Cordova Demo", 200000);
+          db.transaction(createDB, error, checkGroup);
+		}
+    
+}
+function createDB(tx)
+{
+	var grp=document.getElementById('groupname').value;
+	//alert(grp);
+	//tx.executeSql('DROP TABLE IF EXISTS GROUP_TBL');
+	tx.executeSql('CREATE TABLE IF NOT EXISTS GROUP_TBL (gid INTEGER PRIMARY KEY AUTOINCREMENT,gname VARCHAR(25),uname VARCHAR(25),phone VARCHAR(25))');
+	//tx.executeSql('INSERT INTO GROUP_TBL(gname) VALUES ("'+grp+'")');
+  
+}
+// Query the database
+//
+function checkGroup()
+{
+	 var db = window.openDatabase("Database", "1.0", "Cordova Demo", 200000);
+	 db.transaction(checkGroupQuery, error);
+}
+function checkGroupQuery(tx)
+{
+		tx.executeSql('SELECT * FROM GROUP_TBL', [], checkGroupQuerySuccess, error);
+}
+function checkGroupQuerySuccess(tx,results)
+{
+	flag=0;
+	var grpname=document.getElementById('groupname').value;
+	var len=results.rows.length;
+	if(len==0)
+		{
+		createNewGroup();
+		}
+	else
+		{
+			for(var i=0;i<len;i++)
+				{
+					if(results.rows.item(i).gname==grpname)	
+						{
+							alert("Group is already created!!!");
+							document.getElementById('groupname').value="";
+							flag=1;
+							break;
+						}
+				}
+			if(flag!=1)
+				{
+				
+					createNewGroup();
+				}
+		}
+}
+function createNewGroup()
+{
+	 var db = window.openDatabase("Database", "1.0", "Cordova Demo", 200000);
+     db.transaction(insertGroup, error, success);
+}
+function insertGroup(tx)
+{
+	var grp=document.getElementById('groupname').value;
+	tx.executeSql('CREATE TABLE IF NOT EXISTS GROUP_TBL (gid INTEGER PRIMARY KEY AUTOINCREMENT,gname VARCHAR(25),uname VARCHAR(25))');
+	tx.executeSql('INSERT INTO GROUP_TBL(gname) VALUES ("'+grp+'")');
+}
+function success() 
+{
+	alert("Group created");
+	document.getElementById('groupname').value="";
+	window.open("Home.html", "", "");
+}
+function error(err)
+{
+alert("Error processing SQL: "+err.code);
+}
+
+
+function cancle()
+{
+	window.open("Home.html", "", "");
+}
+</script>
+</head>
+
+<body >
+<div id="main" data-role="page">
+<div id="head"  data-theme="b"  data-role="header" data-position="fixed">
+<h2>New Group</h2>
+</div>
+  <div id="tab" data-role="content" data-theme="b" >
+  <ul data-role="listview" data-inset="true" data-theme="b" data-divider-theme="c">
+	<li><input type="text" name="groupname" id="groupname" maxlength="10"></li>
+	<li><input type="button" value="OK" id="ok" size="3" onclick="createGroup();"><input type="button" value="CANCLE" size="3" id="cancle"  onclick="cancle();" ></li>
+	</ul>
+	</div>
+<div id="footer1" data-role="footer" data-theme="b" data-position="fixed" align="center">
+<table><tr><td><a href="Home.html?btn3" rel="external"><img src="images/fb_cancel.png" style="height:35px; width:35px; !important"/></a></td>
+</tr></table>
+</div>
+</div>	
+
+</body>
+</html>

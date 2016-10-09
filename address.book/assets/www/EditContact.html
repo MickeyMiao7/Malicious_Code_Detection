@@ -1,0 +1,215 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+ <link rel="stylesheet" href="style.css" > 
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
+      <meta name="apple-mobile-web-app-capable" content="yes">
+      <meta name="apple-mobile-web-app-status-bar-style" content="black">
+<script type="text/javascript" charset="utf-8" src="phonegap-1.4.1.js"></script>
+<script type="text/javascript" charset="utf-8" src="apis/contacts.js"></script>
+<script type="text/javascript" charset="utf-8" src="apis/device.js"></script>
+<script type="text/javascript" charset="utf-8" src="callLog.js"></script>
+
+ <link rel="stylesheet"  href="css/themes/default/jquery.mobile.css" />
+  <script src="js/jquery.js"></script>
+  <script src="js/jquery.mobile.js"></script>
+ <!-- ------------------------------------------------------------ -->
+<script type="text/javascript">
+var fname="";
+var phone="";
+var name="";
+var email="";
+var param="";
+var group=[];
+var db = window.openDatabase("Database", "1.0", "Cordova Demo", 200000);
+
+function start()
+{
+	var url=window.location.href;
+	// alert(url);
+	 var query="";
+	 var name_arr;
+    if(url.indexOf("?")!=-1)
+     {
+      query=url.split("?");
+     }
+ 
+    name_arr=query[1].split("_");
+    fname=name_arr[0];
+ 
+    document.addEventListener('deviceready',DisplayContact,false);
+}
+function DisplayContact()
+{
+	    var obj = new ContactFindOptions();
+	    obj.filter =fname;
+	    obj.multiple=true;
+	    var filter=[ "displayName","name","phoneNumbers"];
+	    obj.multiple = true;
+	    navigator.contacts.find(filter,contacts_success,contacts_fail, obj);	
+}
+function contacts_success(contacts)
+{
+	
+    for (var i = 0; i < contacts.length ; i++) 
+    {       
+    	for (var j=0; j<contacts[i].phoneNumbers.length; j++) 
+    		{
+    		phone=contacts[i].phoneNumbers[j].value; 
+    		name=contacts[i].name.formatted;
+    	 	}
+    }
+        displayGroup();
+       
+}
+function displayGroup()
+{	
+    db.transaction(createDB_displayGroup, error, success1);
+}
+function createDB_displayGroup(tx)
+{
+     //tx.executeSql('DROP TABLE IF EXISTS GROUP_TBL');
+	 tx.executeSql('CREATE TABLE IF NOT EXISTS GROUP_TBL (id INTEGER PRIMARY KEY AUTOINCREMENT,gname VARCHAR(25),uname VARCHAR(20),phone VARCHAR(20))');
+}
+function success1() 
+{
+	db.transaction(query1, error);
+}
+function query1(tx) 
+{	
+    tx.executeSql('SELECT gname FROM GROUP_TBL WHERE uname= "'+name+'"', [], querySuccess1, error);
+}
+function querySuccess1(tx, results) 
+{
+	 var len = results.rows.length;
+	 for (var i=0; i<len; i++)
+		 {
+		    group[i]=results.rows.item(i).gname;
+		 }
+	 show();
+}
+function error(err)
+{
+alert("Error processing SQL: "+err.code);
+}
+function contacts_fail (error) 
+{
+    document.getElementById('center').innerHTML = "<strong>Error getting contacts.</strong>";
+}
+
+function show()
+{
+	    param ="MECARD :N :"+name+";TEL :"+phone+";";
+	    document.getElementById('head').innerHTML="<font align=center style=\"size: 4in; !important\">"+name+"</font>";
+	    var val=document.getElementById('phone');
+		val.value=phone;
+		var a=name.split(" ");
+		document.getElementById('fname').value=a[0];
+		document.getElementById('lname').value=a[1];
+		if(group.length==0)
+			{
+		    	document.getElementById('group').value="No Group";
+			}
+		for(var i=0;i<group.length;i++)
+			{
+			if(i==0)
+				{
+			    document.getElementById('group').value=group[i];
+				}
+			else
+				document.getElementById('group').value=document.getElementById('group').value+","+group[i];
+			}
+	
+}
+
+function onSuccess(contacts)
+{
+   alert("Contact sucessfully added!!!!!");
+}
+
+function getQR()
+{
+	var ele = document.getElementById("qrcode");
+	var text = document.getElementById("text");
+	var flag=0;
+	if(ele.style.display == "block") 
+	{
+		flag=1;
+    		ele.style.display = "none";
+		text.innerHTML = "Click to display QR Code";
+		document.getElementById('qrcode').innerHTML="<img src=http://chart.apis.google.com/chart?cht=qr&chs=250x250&chl="+param+"&chld=H|0 />" 
+  	}
+	else 
+	{
+		ele.style.display = "block";
+		text.innerHTML = "Click to hide QR Code";
+		if(flag==0)
+			{
+			document.getElementById('qrcode').innerHTML="<img src=http://chart.apis.google.com/chart?cht=qr&chs=250x250&chl="+param+"&chld=H|0 />"
+			}
+	}
+	
+}
+
+function sms()
+{
+	window.location.href ="sms:"+phone+"?body=";	
+}
+function calling()
+{
+	window.location.href ="tel:"+phone;	
+}
+
+</script>
+
+</head>
+<body style="background-color: gray; !important" onload="start();">
+<div id="main" data-role="page">
+<div id="head" style="height:7%; !important;" data-theme="b" align="center" data-role="header" data-position="fixed">
+</div>
+<div id="center" data-role="content">
+<ul data-role="listview" data-inset="true" data-theme="b" data-divider-theme="b">
+<li><img src="images/icon_contacts.png"  alt="icon1" class="ui-li-icon" style="height:30px; width:30px; !important">
+<p><h3>First Name </h3>
+</li>
+<li>
+<input type="text" id="fname"  readonly="readonly" onfocus="this.blur();">
+</li>
+<li>
+<li><img src="images/icon_contacts.png" alt="icon2" class="ui-li-icon" style="height:30px; width:30px; !important">
+<p><h3>Last Name </h3></li>
+<li>
+<input type="text" id="lname"  readonly="readonly" onfocus="this.blur();" >
+</li>
+</ul>
+<ul data-role="listview" data-inset="true" data-theme="b" data-divider-theme="b">
+<li><img src=images/cd_call.png alt="icon3" class="ui-li-icon" style="height:30px; width:30px; !important" onclick="calling();">
+<p><h3>Phone <img src=images/cd_msg.png  style="height:30px; width:30px; float:right; padding-bottom 2px; !important"  onclick="sms();"></h3></li>
+<li>
+<input type="number" id="phone"  readonly="readonly" onfocus="this.blur();">
+</li>
+</ul>
+<ul data-role="listview" data-inset="true" data-theme="b" data-divider-theme="b">
+<li><img src=images/cd_group.png alt="icon4" class="ui-li-icon" style="height:30px; width:30px; !important">
+<p><h3>&nbsp;&nbsp;Group </h3></li>
+<li>
+<input type="text" id="group"  readonly="readonly" onfocus="this.blur();">
+</li>
+</ul>
+<ul data-role="listview" data-inset="true" data-theme="b" data-divider-theme="b">
+<li><img src=images/cd_barcode.png alt="icon4" class="ui-li-icon" style="height:30px; width:30px; !important" onclick="getQR();">
+<p><h3 id="text">&nbsp;&nbsp;Click to display Barcode </h3></li>
+<li>
+<div id="qrcode" style="display: none; !important;"></div>
+</li>
+</ul>
+</div>
+<div id="foot"  style="height: 8%; !important;"  data-role="footer" data-position="fixed" align="center" data-theme='b'>
+<table ><tr><td><img src=images/fb_call.png  style="height:30px; width:30px; !important"  onclick="calling();">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+<td><img src=images/fb_sms.png  style="height:30px; width:30px; !important"  onclick="sms();">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+<td><a href=Home.html rel=external><img src=images/fb_cancel.png style="height:32px; width:32px; !imporatant;"></a></td></tr></table>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,64 @@
+body
+{
+	background-image: url("images/w4.png");
+}
+#header
+{
+	background-color:gray;
+	border: 1px;
+	width: 100%;
+	border-style :double;
+	 border-color:gray;   
+	 position:relative;
+}
+#header a
+{
+	background-color:sky blue;
+	border: 1em;
+	border-color: black;
+	width: 100%
+	
+}
+#header button
+{
+	height: 75px; !important;
+	width: 70px; !important;
+}
+
+#footer button
+{
+	height: 75px;
+	width: 70px		
+}
+#header input
+{
+	height: 75px;
+	width: 70px		
+}
+#header a img
+{
+	height: 65px;
+	width: 60px		
+}
+div 
+{
+	
+	border:1px;
+	 border-style :dotted;
+	 border-color:gray;   
+	 position:relative;
+	
+	 
+}
+
+/*#sms_part
+{
+height: 200px;
+width: 300px;
+overflow: auto;
+border: 1px solid #666;
+background-color: #ccc;
+padding: 8px;
+position:absolute; z-index:1;
+}*/
+

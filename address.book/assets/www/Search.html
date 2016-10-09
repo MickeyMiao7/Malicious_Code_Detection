@@ -1,0 +1,137 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Search Contact</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
+      <meta name="apple-mobile-web-app-capable" content="yes">
+      <meta name="apple-mobile-web-app-status-bar-style" content="black">
+<link rel="stylesheet" href="style.css" > 
+<link rel="stylesheet" href="scrollbar.css" >
+<script type="text/javascript" charset="utf-8" src="phonegap-1.4.1.js"></script>
+<!-- <script type="text/javascript" charset="utf-8" src="apis/contacts.js"></script> -->
+<!--  <script type="text/javascript" charset="utf-8" src="apis/device.js"></script>-->
+<script type="text/javascript" charset="utf-8" src="callLog.js"></script>
+<script type="text/javascript" charset="utf-8" src="smsread.js"></script>
+<!-- /************************   JQM  *****************************/ 
+
+	 <script src="jquery.js"></script> 
+     <link href="jquery.mobile.min.css" rel="stylesheet" type="text/css" /> 
+     <script type="text/javascript" src="http://code.jquery.com/mobile/latest/jquery.mobile.min.js"></script>
+    <script src="js/jqm-docs.js"></script>
+  /***************************************************/-->
+ <!-- ************************************************************ -->
+ <link rel="stylesheet"  href="css/themes/default/jquery.mobile.css" />
+ <script src="js/jquery.js"></script>
+ <script src="js/jquery.mobile.js"></script>
+ <!-- ------------------------------------------------------------ -->
+<script type="text/javascript">
+var arr=new Array();
+var arr_num=new Array();
+var flag=0;
+function start()
+{
+document.addEventListener('deviceready',contacts,false);
+}
+function contacts() 
+{
+	
+	document.getElementById('log').innerHTML =" ";
+	
+    var obj = new ContactFindOptions();
+    obj.filter = " ";
+    obj.multiple=true;
+    var filter=[ "displayName","name","phoneNumbers"];
+    obj.multiple = true;
+    navigator.contacts.find(filter,success,fail, obj);
+}
+function success(contacts)
+{
+	document.getElementById('log').innerHTML =" ";
+	
+    for (var i = 0; i < contacts.length ; i++) 
+    {       
+    	for (var j=0; j<contacts[i].phoneNumbers.length; j++) 
+    		{
+    		   if (contacts[i].name && contacts[i].name.formatted) 
+		        {
+    			   arr[i]=contacts[i].name.formatted;
+    			   arr_num[i]=contacts[i].phoneNumbers[j].value;
+		        	document.getElementById('log').innerHTML=document.getElementById('log').innerHTML + 
+		           "<br/><a href='tel:"+contacts[i].phoneNumbers[j].value+"' rel=external><img src=images/shortcut_contact.png height=35px width=35px /></a>" + contacts[i].name.formatted+" "+contacts[i].phoneNumbers[j].value;
+		       }
+    		}
+    }
+    match();
+}
+function fail (error) 
+{
+    document.getElementById('log').innerHTML = "<strong>Error getting contacts.</strong>";
+}
+
+
+function match()
+{
+	
+	var a=0;
+	//alert("in match");
+	 var strValue = document.getElementById("log").innerHTML;
+	// alert(	arr.length);
+	 //alert(arr);
+	 var str=document.getElementById('tags').value;
+	 for(var i=0;i<arr.length;i++)
+		 {
+			 var len=str.length;
+			 var v=arr[i].substring(0,1);
+			 var lower=v.toLowerCase();
+			 if(str=="")
+			  {
+		    	 document.getElementById('log').innerHTML="";
+				 for(var i=0;i<arr.length;i++)
+				 {
+					 document.getElementById('log').innerHTML=document.getElementById('log').innerHTML+"<br/><a href='tel:"+arr_num[i]+"' rel=external><img src=images/shortcut_contact.png height=35px width=35px /></a>"+arr[i]+" "+arr_num[i];
+					 
+				 }
+					flag=0;
+			  }
+			if(lower==str)	
+				{
+				 a=1;
+				 if(flag==0)
+					{
+				      document.getElementById('log').innerHTML="<br/><a href='tel:"+arr_num[i]+"' rel=external><img src=images/shortcut_contact.png height=35px width=35px /></a>"+arr[i]+" "+arr_num[i];
+				     flag=1;
+					}
+				 else
+					 document.getElementById('log').innerHTML=document.getElementById('log').innerHTML+"<br/><a href='tel:"+arr_num[i]+"' rel=external><img src=images/shortcut_contact.png height=35px width=35px /></a>"+arr[i]+" "+arr_num[i];
+				}
+			
+			    /* if(a==1)
+					  {
+					   
+				        document.getElementById('log').innerHTML="No match Found!!!";
+					  }*/
+				
+			 }
+	 
+	 
+}
+
+
+</script>
+</head>
+<body style="background-color: white; !important" onload="start();">
+<div id="main" data-role="page" >
+<div id="search" data-role="header" data-theme="b" data-position="fixed" >
+<input type="search" id="tags" name="tags" placeholder="Click me!!!!!"  onkeyup="match();" data-native-menu="false"  /></div>
+<div id="log" data-role="content" data-theme="b" style="background-color: gray; !important"></div> 
+
+<div id="footer1" data-role="footer" data-theme="b" data-position="fixed" align="center">
+<table><tr><td><a href="Home.html?btn3" rel="external"><img src="images/fb_cancel.png" style="height:35px; width:35px; !important"/></a></td>
+</tr></table>
+</div>
+</div>
+
+
+</body>
+</html>

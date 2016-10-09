@@ -1,0 +1,155 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+ <link rel="stylesheet" href="style.css" > 
+<link rel="stylesheet" href="scrollbar.css" >
+<script type="text/javascript" charset="utf-8" src="phonegap-1.4.1.js"></script>
+<script type="text/javascript" charset="utf-8" src="apis/contacts.js"></script>
+
+<script type="text/javascript" charset="utf-8" src="callLog.js"></script>
+<script type="text/javascript" charset="utf-8" src="smsread.js"></script>
+<script type="text/javascript" charset="utf-8" src="iscroll.js"></script>
+ <!-- /************************   JQM  *****************************/ --> 
+<meta name="viewport" content="width=device-width, initial-scale=1"> 
+        <link href="http://code.jquery.com/mobile/latest/jquery.mobile.min.css" rel="stylesheet" type="text/css" /> 
+        <script type="text/javascript" src="http://code.jquery.com/jquery-1.6.4.min.js"></script>
+        <script type="text/javascript" src="http://code.jquery.com/mobile/latest/jquery.mobile.min.js"></script>
+	<script type="application/javascript" src="iscroll.js"></script>
+<script type="application/javascript" src="iscroll.js"></script>
+
+<script type="text/javascript">
+var myScroll;
+function loaded()
+{	
+	alert("in scroll");
+	myScroll = new iScroll('calllog');
+}
+document.addEventListener('DOMContentLoaded', function () { 
+	alert("in add event");
+	setTimeout(loaded, 3500);
+	}, false);
+</script>
+
+
+</head>
+
+<body onload="call();">
+
+<div id="header" data-theme="b"  data-role="header">
+<table>
+<tr>
+<td><button id="btn1" autofocus="autofocus" onclick="call();" ><img src="images/icon_dial.png" style=" height: 35px;width: 22px; !important"></button>
+<button id="btn2"><img src="images/icon_sms.png" style="height: 35px;width: 22px; !important"></button>
+<button id="btn3" onclick="get_contacts();"><img src="images/icon_contacts.png" style="height: 35px;width: 22px; !important"></button>
+<button id="btn4" onclick="cnt_fav(); ;"><img src="images/icon_star.png" style="height: 35px;width: 22px; !important"></button>
+</td>
+</tr>
+</table>
+</div>
+
+<div id="search" data-role="header" data-theme="b" ></div>
+
+<div id="contacts-output"  style="height:10%; width:100%; overflow: auto; !important;" data-theme="b"></div>
+
+<ul data-role=listview data-inset=true data-theme=b data-divider-theme=c><li>
+<div id="calllog"  style="height:360px; width:100%; overflow:scroll; !important;" data-theme="b" >
+</div></li></ul>
+
+<div id="sms_part" style="height:10%; width:100%; overflow: auto; !important;" data-theme="b"></div>
+
+<div id="footer" data-theme="b" ></div>
+
+<div id="fav-output" data-theme="b" ></div>
+
+<div id="foot" data-role="footer" style="height:45px; width:100%; overflow:scroll; !important;" data-theme="b"  ></div>
+
+<script type="text/javascript" >
+  document.addEventListener('deviceready',call,true);
+  
+   var btn = document.getElementById("btn1");
+    function call()
+    {
+	   document.getElementById('contacts-output').innerHTML="";
+	   document.getElementById('sms_part').innerHTML="";
+	   document.getElementById('footer').innerHTML="";
+	   document.getElementById('calllog').innerHTML =" ";
+	   document.getElementById('fav-output').innerHTML =" ";
+	   document.getElementById('search').innerHTML =" ";
+   	   window.plugins.CallLog.list("all",function(r){printResult(r)},function(e){console.log(e)});
+    }
+    
+	 function printResult(fileInfo)
+	 {
+		 var innerHtmlText;
+		 var no_of_call=0;
+	  var key=Object.keys(fileInfo);
+	  document.getElementById('foot').innerHTML=document.getElementById('foot').innerHTML+"<table><tr><td></td><td><img src=images/miss.png></td>"+
+	  "<td><img src=images/in.png></td><td><img src=images/out.png onclick=call();></td></tr><table>";
+	  for(var i=0;i<fileInfo.rows.length;i++)
+	  {
+		  if(fileInfo.rows[i].cachedName!=fileInfo.rows[i+1].cachedName)
+			  {
+			  	var name=fileInfo.rows[i].cachedName;
+			  	 	if(name==undefined)
+			  		{
+			  			fileInfo.rows[i].cachedName="no name";
+			  			document.getElementById("calllog").innerHTML=document.getElementById("calllog").innerHTML+"<br/><br/><a href='tel:"+fileInfo.rows[i].number+"' style=border-bottom: 1px;!important;><img src=images/shortcut_contact.png height=30 width=30></a>"+fileInfo.rows[i].cachedName+" ("+fileInfo.rows[i].number+" )<img src=images/icon_log_outgoing.png height=30 width=30>";
+			  		}
+			  	else
+			  		{
+			  	  		document.getElementById("calllog").innerHTML=document.getElementById("calllog").innerHTML+"<br/><br/><a href='tel:"+fileInfo.rows[i].number+"' style=border-bottom: 1px;!important;><img src=images/shortcut_contact.png height=30 width=30></a>"+fileInfo.rows[i].cachedName+" ("+fileInfo.rows[i].number+" )  <img src=images/icon_log_outgoing.png height=30 width=30>";
+			  		}
+			  	}
+	  }
+	 
+	 }
+  
+  /************************SMS************************/
+	  var btn2 = document.getElementById("btn2");
+	  btn2.onclick = function()
+	  {
+		   document.getElementById('contacts-output').innerHTML="";
+		   document.getElementById('sms_part').innerHTML="";
+		   document.getElementById('footer').innerHTML="";
+		   document.getElementById('calllog').style.visibility = 'hidden';
+		   document.getElementById('calllog').style.height="0%";
+		   document.getElementById('search').innerHTML =" ";
+		   window.plugins.SMSReader.getSent("all",function(r){printResultSent(r)},function(e){console.log(e)});
+	   }
+	  
+		function printResultSent(sms)
+		{
+			 
+			 for(var j=0;j<sms.messages.length;j++)
+			 {
+				  document.getElementById("sms_part").innerHTML=document.getElementById("sms_part").innerHTML+"<br/><a href='sms:"+sms.messages[j].number+"'><img src=images/fav_thumbnail.png height=30 width=30></a>"+sms.messages[j].number+" "+sms.messages[j].text;
+					
+			 }
+			document.getElementById("footer").innerHTML="<button onclick=compose();><img src=images/compose.png></button>";
+	    }
+		 
+  
+  function compose()
+  {
+	  window.location.href = "sms:?body="; 
+  }
+  
+ function getFav()
+ {
+	   document.getElementById('contacts-output').innerHTML="";
+	   document.getElementById('sms_part').innerHTML="";
+	   document.getElementById('footer').innerHTML="";
+	   document.getElementById('calllog').innerHTML =" ";
+	   document.getElementById('fav-output').innerHTML="<button id=fav onclick=get_contacts1();>ADD<img src=images/fav_add.png height: 75px; width: 70px z-index:-1	></button>";    
+	 
+ }
+ var myScroll;
+ function loaded() {
+ 	myScroll = new iScroll('sms_part');
+ }
+ document.addEventListener("deviceready", loaded, false);
+ </script>
+</body>
+</html>
+
+
