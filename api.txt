@@ -1,8 +1,59 @@
 URL: ./address.book/smali/com/google/zxing/client/android/CaptureActivity.smali
 MaliciousAPI: barcodescanner.SCAN
 
+URL: ./address.book/smali/com/google/zxing/client/android/CaptureActivity.smali
+MaliciousAPI: Internal
+
+URL: ./address.book/smali/com/google/zxing/client/android/CaptureActivity.smali
+MaliciousAPI: Internal
+
+URL: ./address.book/smali/com/google/zxing/client/android/CaptureActivity.smali
+MaliciousAPI: Internal
+
+URL: ./address.book/smali/com/google/zxing/client/android/CaptureActivity.smali
+MaliciousAPI: Internal
+
 URL: ./address.book/smali/com/google/zxing/client/android/Intents$Scan.smali
 MaliciousAPI: barcodescanner.SCAN
+
+URL: ./address.book/smali/com/google/zxing/MultiFormatReader.smali
+MaliciousAPI: Internal
+
+URL: ./address.book/smali/com/google/zxing/MultiFormatReader.smali
+MaliciousAPI: Internal
+
+URL: ./address.book/smali/com/google/zxing/MultiFormatReader.smali
+MaliciousAPI: Internal
+
+URL: ./address.book/smali/com/google/zxing/MultiFormatReader.smali
+MaliciousAPI: Internal
+
+URL: ./address.book/smali/com/google/zxing/qrcode/encoder/MaskUtil.smali
+MaliciousAPI: Internal
+
+URL: ./address.book/smali/com/google/zxing/qrcode/encoder/MaskUtil.smali
+MaliciousAPI: Internal
+
+URL: ./address.book/smali/com/google/zxing/qrcode/encoder/MaskUtil.smali
+MaliciousAPI: Internal
+
+URL: ./address.book/smali/com/phonegap/CameraLauncher.smali
+MaliciousAPI: INTERNAL
+
+URL: ./address.book/smali/com/phonegap/CameraLauncher.smali
+MaliciousAPI: internal
+
+URL: ./address.book/smali/com/phonegap/Capture.smali
+MaliciousAPI: INTERNAL
+
+URL: ./address.book/smali/com/phonegap/Capture.smali
+MaliciousAPI: INTERNAL
+
+URL: ./address.book/smali/com/phonegap/Capture.smali
+MaliciousAPI: internal
+
+URL: ./address.book/smali/com/phonegap/DirectoryManager.smali
+MaliciousAPI: Internal
 
 URL: ./address.book/smali/com/phonegap/plugins/barcodescanner/BarcodeScanner.smali
 MaliciousAPI: barcodescanner.SCAN
